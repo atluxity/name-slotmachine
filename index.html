@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conference Lottery Machine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
+    <style>
+html, body {
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.slot-machine-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    padding-top: 50px;
+}
+
+.slot-machine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Aligns content from the top */
+    width: 300px; /* Adjust as needed */
+    border: 2px solid #000;
+    background-color: #000;
+    font-size: 2rem;
+    overflow: hidden;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.1);
+    position: relative;
+    color: #fff;
+}
+
+.slot-top-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.slot-top {
+    width: 100%; /* Ensures the image scales to the width of the slot machine */
+    height: auto; /* Maintains aspect ratio */
+}
+
+.name-container {
+    display: block;
+    width: 100%;
+    min-height: 100px; /* Ensure space for at least two lines */
+    max-height: 150px; /* Allow extra space for bold text */
+    text-align: center;
+    line-height: normal; /* Allow the text to wrap naturally */
+    padding: 15px; /* Add padding for better spacing */
+    transition: transform 0.1s ease-in-out, opacity 2s ease-in, font-weight 2s ease-in;
+    font-weight: normal; /* Ensure fake names are not bold */
+    color: #fff; /* Text color */
+    overflow-y: auto; /* Allow scrolling if the text is too long */
+    white-space: normal; /* Allow text to wrap */
+    word-wrap: break-word; /* Break long words if necessary */
+}
+
+.name-container.winner {
+    font-weight: bold; /* Only make the winner's name bold */
+    font-size: 2.5rem;
+    color: #ffdd57; /* Golden color for the winner's name */
+    min-height: 120px; /* Ensure more space when text is bold */
+    max-height: 180px; /* Allow extra space for the bold text */
+}
+
+.lights {
+    position: absolute;
+    display: flex;
+    gap: 0; /* Remove gap between lights */
+    pointer-events: none;
+}
+
+.lights.top,
+.lights.bottom {
+    left: -20px;
+    right: -20px;
+    justify-content: space-between; /* Space the lights evenly */
+}
+
+.lights.top {
+    top: -35px;
+}
+
+.lights.bottom {
+    bottom: -35px;
+}
+
+.lights.left,
+.lights.right {
+    top: -20px;
+    bottom: -20px;
+    flex-direction: column;
+    justify-content: space-between; /* Space the lights evenly */
+    align-items: center;
+}
+
+.lights.left {
+    left: -35px;
+}
+
+.lights.right {
+    right: -35px;
+}
+
+.light {
+    background-color: red;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.light.on {
+    animation: rollingColors 1s linear infinite;
+}
+
+@keyframes rollingColors {
+    0% {
+        background-color: red;
+    }
+    33% {
+        background-color: yellow;
+    }
+    66% {
+        background-color: blue;
+    }
+    100% {
+        background-color: red;
+    }
+}
+
+.lever-container {
+    display: flex;
+    align-items: flex-start;
+    height: 300px;
+    position: relative;
+}
+
+.lever {
+    background: linear-gradient(135deg, #e91e63, #9c27b0); /* Gradient from pink to purple */
+    width: 30px;
+    height: 200px;
+    position: relative;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.lever-ball {
+    background: radial-gradient(circle, #f06292, #ad1457); /* Gradient from lighter pink to darker pink */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    position: absolute;
+    top: -30px;
+    left: -15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.lever.pull {
+    transform: rotate(45deg) translateX(20px);
+}
+
+.fireworks {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.firework {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: explode 0.6s ease-out forwards;
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(10);
+        opacity: 0;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container slot-machine-container">
+	<div class="slot-machine" id="slotMachine">
+		<div class="slot-top-wrapper">
+			<img src="slot-top.png" alt="Slot Machine Top" class="slot-top" id="slotTopImage">
+		</div>
+		<div class="name-container" id="nameContainer">Names Slot Machine</div>
+	</div>
+	<div class="lights top" id="topLights"></div>
+        <div class="lights bottom" id="bottomLights"></div>
+        <div class="lights left" id="leftLights"></div>
+        <div class="lights right" id="rightLights"></div>
+        <div class="lever-container">
+            <div class="lever" id="lever" onclick="startDraw()">
+                <div class="lever-ball"></div>
+            </div>
+         </div>
+        </div>
+        <div class="fireworks" id="fireworks"></div>
+    </section>
+    <script src="lottery.js"></script>
+</body>
+</html>
+
